@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,6 +9,9 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
+	"github.com/ogier/pflag"
 )
 
 var (
@@ -18,9 +20,9 @@ var (
 )
 
 func main() {
-	flag.Parse()
+	pflag.Parse()
 	// if user does not supply flags, print usage
-	if flag.NFlag() == 0 {
+	if pflag.NFlag() == 0 {
 		printUsage()
 	}
 	users := strings.Split(user, ",")
@@ -28,23 +30,23 @@ func main() {
 	fmt.Println("")
 	for _, u := range users {
 		result := getUsers(u)
-		fmt.Printf("Username:	%s \n", result.Login)
-		fmt.Printf("Name:		%s \n", result.Name)
-		fmt.Printf("Email:		%s \n", result.Email)
-		fmt.Printf("Bio:		%s \n", result.Bio)
+		color.Cyan(`Username:	%s`, result.Login)
+		color.Blue(`Name:		%s`, result.Name)
+		color.Green(`Email:		%s`, result.Email)
+		color.HiMagenta(`Bio:		%s`, result.Bio)
 		fmt.Println("")
 	}
 
 }
 
 func init() {
-	flag.StringVar(&user, "user", "u", "Search Users")
+	pflag.StringVarP(&user, "user", "u", "", "Search Users")
 }
 
 func printUsage() {
 	fmt.Printf("Usage: %s [options]\n", os.Args[0])
 	fmt.Println("Options:")
-	flag.PrintDefaults()
+	pflag.PrintDefaults()
 	os.Exit(1)
 }
 
@@ -105,7 +107,7 @@ func getUsers(name string) User {
 
 	if (User{}) == user {
 
-		fmt.Printf("Sorry the GitHub user doesn't exist")
+		color.Red("Sorry the GitHub user doesn't exist")
 		os.Exit(1)
 		return user
 	}
